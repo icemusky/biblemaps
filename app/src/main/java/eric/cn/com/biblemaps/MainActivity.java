@@ -232,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .position(point)
                     .icon(bitmap);
             mBaiduMap.addOverlay(option);
-
         }
 
 //
