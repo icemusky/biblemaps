@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .icon(bitmap);
             mBaiduMap.addOverlay(option);
         }
-
 //
 //        //定义Maker坐标点
 //        LatLng point1 = new LatLng(41.822981, 123.442725);
