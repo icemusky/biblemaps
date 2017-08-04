@@ -1,9 +1,5 @@
 package eric.cn.com.biblemaps;
 
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,7 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -19,18 +15,31 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import eric.cn.com.biblemaps.Bean.PoiMessageEvent;
+import eric.cn.com.biblemaps.Bean.PoiScanBean;
+import eric.cn.com.biblemaps.Net.PoiScanNet;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
     MapView mMapView = null;
     BaiduMap mBaiduMap;
     // 定位相关
@@ -45,10 +54,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public MyLocationListenner myListener = new MyLocationListenner();
     private MyLocationConfiguration.LocationMode mCurrentMode;
     BitmapDescriptor mCurrentMarker;
+    private List<PoiScanBean> poi_data = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EventBus.getDefault().register(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -60,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initView();
+        PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
     }
 
     private void initView() {
@@ -80,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mLocClient.start();
 
     }
-
 
 
     /**
@@ -146,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapView.onResume();
 
     }
+
     @Override
     protected void onStop() {
         //取消注册传感器监听
@@ -198,5 +211,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         public void onReceivePoi(BDLocation poiLocation) {
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void PoiScan(PoiMessageEvent messageEvent) {
+
+        if (messageEvent.getBean().getSize() > 0) {
+            poi_data.add(messageEvent.getBean());
+        }
+
+        for (int i = 0; i < poi_data.get(0).getSize(); i++) {
+//        int i=0;
+            LatLng point = new LatLng(poi_data.get(0).getContents().get(i).getLocation().get(1), poi_data.get(0).getContents().get(i).getLocation().get(0));
+            Log.i(TAG, "输出坐标：》》》》》》》》" +poi_data.get(0).getContents().get(i).getLocation().get(1)+poi_data.get(0).getContents().get(i).getLocation().get(0));
+            //构建Marker图标
+            BitmapDescriptor bitmap = BitmapDescriptorFactory
+                    .fromResource(R.drawable.icon_marka);
+           //构建MarkerOption，用于在地图上添加Marker
+            OverlayOptions option = new MarkerOptions()
+                    .position(point)
+                    .icon(bitmap);
+            mBaiduMap.addOverlay(option);
+
+        }
+
+//
+//        //定义Maker坐标点
+//        LatLng point1 = new LatLng(41.822981, 123.442725);
+////构建Marker图标
+//        BitmapDescriptor bitmap = BitmapDescriptorFactory
+//                .fromResource(R.drawable.icon_marka);
+////构建MarkerOption，用于在地图上添加Marker
+//        OverlayOptions option = new MarkerOptions()
+//                .position(point1)
+//                .icon(bitmap);
+////在地图上添加Marker，并显示
+//        mBaiduMap.addOverlay(option);
     }
 }

@@ -34,4 +34,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile files('libs/BaiduLBS_Android.jar')
+    compile 'org.xutils:xutils:3.5.0'
+    compile files('libs/gson-2.5.jar')
+    compile 'org.greenrobot:eventbus:3.0.0'
 }
