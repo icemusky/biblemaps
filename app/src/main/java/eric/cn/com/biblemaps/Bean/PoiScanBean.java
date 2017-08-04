@@ -7,7 +7,6 @@ import java.util.List;
  */
 
 public class PoiScanBean {
-
     /**
      * status : 0
      * total : 2
