@@ -1,5 +1,7 @@
 package eric.cn.com.biblemaps;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,7 +10,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -16,11 +23,14 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
@@ -31,6 +41,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +69,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MyLocationConfiguration.LocationMode mCurrentMode;
     BitmapDescriptor mCurrentMarker;
     private List<PoiScanBean> poi_data = new ArrayList<>();
+    private InfoWindow mInfoWindow;
 
+    // 提供三种样式模板："custom_config_blue.txt"，"custom_config_dark.txt"，"custom_config_midnightblue.txt"
+    private static String PATH = "custom_config_midnightblue.txt";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,16 +89,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initView();
-        PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
+        PoiScanNet.PoiScanNet("41.822981", "123.442725", "100");
+
     }
 
     private void initView() {
         mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
+
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
 //        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);//获取传感器管理服务
         // 开启定位图层
         mBaiduMap.setMyLocationEnabled(true);
+        mMapView.showZoomControls(false);
         // 定位初始化
         mLocClient = new LocationClient(this);
         mLocClient.registerLocationListener(myListener);
@@ -91,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
+        setMapCustomFile(MainActivity.this,PATH);
+        mMapView = new MapView(this, new BaiduMapOptions());
+        MapView.setMapCustomEnable(true);
 
     }
 
@@ -149,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mBaiduMap.setMyLocationEnabled(false);
         mMapView.onDestroy();
         mMapView = null;
+        MapView.setMapCustomEnable(false);
     }
 
     @Override
@@ -222,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         for (int i = 0; i < poi_data.get(0).getSize(); i++) {
 //        int i=0;
-            LatLng point = new LatLng(poi_data.get(0).getContents().get(i).getLocation().get(1), poi_data.get(0).getContents().get(i).getLocation().get(0));
+            final LatLng point = new LatLng(poi_data.get(0).getContents().get(i).getLocation().get(1), poi_data.get(0).getContents().get(i).getLocation().get(0));
             Log.i(TAG, "输出坐标：》》》》》》》》" +poi_data.get(0).getContents().get(i).getLocation().get(1)+poi_data.get(0).getContents().get(i).getLocation().get(0));
             //构建Marker图标
             BitmapDescriptor bitmap = BitmapDescriptorFactory
@@ -232,18 +256,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .position(point)
                     .icon(bitmap);
             mBaiduMap.addOverlay(option);
+            mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Button button = new Button(getApplicationContext());
+                    button.setBackgroundResource(R.drawable.popup);
+                    button.setTextColor(Color.BLACK);
+                    button.setWidth(300);
+
+                    LayoutInflater layoutInflater=LayoutInflater.from(MainActivity.this);
+                    View view=layoutInflater.inflate(R.layout.view_dialog_map,null);
+                    TextView tv_title= (TextView) view.findViewById(R.id.tv_title);
+                    LatLng ll = marker.getPosition();
+                    for (int i=0;i<=poi_data.size();i++){
+                        Log.i("MainActivity", "判断Location："+marker.getPosition().latitude+"数据中的Location："+poi_data.get(0).getContents().get(i).getLocation().get(1));
+                        if (marker.getPosition().latitude==poi_data.get(0).getContents().get(i).getLocation().get(1)&&marker.getPosition().longitude==poi_data.get(0).getContents().get(i).getLocation().get(0)){
+//                            button.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
+//                            Log.i("MainActivity", poi_data.get(0).getContents().get(i).getLocation()+"设置参数");
+                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
+                        }
+                    }
+
+//                    linearLayout.setBackgroundResource(R.drawable.popup);
+                    mInfoWindow = new InfoWindow(view, ll, -100);
+                    mBaiduMap.showInfoWindow(mInfoWindow);
+                    return false;
+                }
+            });
         }
-//
-//        //定义Maker坐标点
-//        LatLng point1 = new LatLng(41.822981, 123.442725);
-////构建Marker图标
-//        BitmapDescriptor bitmap = BitmapDescriptorFactory
-//                .fromResource(R.drawable.icon_marka);
-////构建MarkerOption，用于在地图上添加Marker
-//        OverlayOptions option = new MarkerOptions()
-//                .position(point1)
-//                .icon(bitmap);
-////在地图上添加Marker，并显示
-//        mBaiduMap.addOverlay(option);
+
+    }
+    // 设置个性化地图config文件路径
+    private void setMapCustomFile(Context context, String PATH) {
+        FileOutputStream out = null;
+        InputStream inputStream = null;
+        String moduleName = null;
+        try {
+            inputStream = context.getAssets()
+                    .open("customConfigdir/" + PATH);
+            byte[] b = new byte[inputStream.available()];
+            inputStream.read(b);
+
+            moduleName = context.getFilesDir().getAbsolutePath();
+            File f = new File(moduleName + "/" + PATH);
+            if (f.exists()) {
+                f.delete();
+            }
+            f.createNewFile();
+            out = new FileOutputStream(f);
+            out.write(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        MapView.setCustomMapStylePath(moduleName + "/" + PATH);
+
     }
 }
