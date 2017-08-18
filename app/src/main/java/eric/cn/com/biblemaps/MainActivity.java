@@ -1,6 +1,10 @@
 package eric.cn.com.biblemaps;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -36,6 +40,10 @@ import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMError;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -56,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
     MapView mMapView = null;
     BaiduMap mBaiduMap;
+
     // 定位相关
     LocationClient mLocClient;
     boolean isFirstLoc = true; // 是否首次定位
@@ -70,9 +79,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     BitmapDescriptor mCurrentMarker;
     private List<PoiScanBean> poi_data = new ArrayList<>();
     private InfoWindow mInfoWindow;
+    private ProgressDialog mDialog;
 
     // 提供三种样式模板："custom_config_blue.txt"，"custom_config_dark.txt"，"custom_config_midnightblue.txt"
-    private static String PATH = "custom_config_midnightblue.txt";
+    private static String PATH = "custom_config.txt";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,11 +98,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
 
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initView();
-        PoiScanNet.PoiScanNet("41.822981", "123.442725", "100");
+        PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
+
+
+//        signUp();
+        signIn();
 
     }
 
@@ -104,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 开启定位图层
         mBaiduMap.setMyLocationEnabled(true);
         mMapView.showZoomControls(false);
+        //旋转 调整俯仰角 overlook
+        float overlook = mBaiduMap.getMapStatus().overlook;
+        MapStatus overStatus = new MapStatus.Builder().overlook(overlook - 40).build();
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(overStatus));
         // 定位初始化
         mLocClient = new LocationClient(this);
         mLocClient.registerLocationListener(myListener);
@@ -113,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
-        setMapCustomFile(MainActivity.this,PATH);
+        setMapCustomFile(MainActivity.this, PATH);
         mMapView = new MapView(this, new BaiduMapOptions());
         MapView.setMapCustomEnable(true);
 
@@ -228,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 builder.target(ll).zoom(18.0f);
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
             }
+
         }
 
         @Override
@@ -249,11 +268,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < poi_data.get(0).getSize(); i++) {
 //        int i=0;
             final LatLng point = new LatLng(poi_data.get(0).getContents().get(i).getLocation().get(1), poi_data.get(0).getContents().get(i).getLocation().get(0));
-            Log.i(TAG, "输出坐标：》》》》》》》》" +poi_data.get(0).getContents().get(i).getLocation().get(1)+poi_data.get(0).getContents().get(i).getLocation().get(0));
-            //构建Marker图标
-            BitmapDescriptor bitmap = BitmapDescriptorFactory
-                    .fromResource(R.drawable.icon_marka);
-           //构建MarkerOption，用于在地图上添加Marker
+            Log.i(TAG, "输出坐标：》》》》》》》》" + poi_data.get(0).getContents().get(i).getLocation().get(1) + poi_data.get(0).getContents().get(i).getLocation().get(0));
+            BitmapDescriptor bitmap = null;
+            if (poi_data.get(0).getContents().get(i).getShop_type().equals("3")){
+                //类型为3 是教会
+                //构建Marker图标
+                bitmap = BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_jiaotang);
+                Log.i(TAG,"绘制图标：教会");
+            }if (poi_data.get(0).getContents().get(i).getShop_type().equals("1")){
+                //类型为1  是祈祷
+                //构建Marker图标
+                bitmap = BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_qidao);
+                Log.i(TAG,"绘制图标：祷告");
+            }
+            
+            //构建MarkerOption，用于在地图上添加Marker
             OverlayOptions option = new MarkerOptions()
                     .position(point)
                     .icon(bitmap);
@@ -266,16 +297,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     button.setTextColor(Color.BLACK);
                     button.setWidth(300);
 
-                    LayoutInflater layoutInflater=LayoutInflater.from(MainActivity.this);
-                    View view=layoutInflater.inflate(R.layout.view_dialog_map,null);
-                    TextView tv_title= (TextView) view.findViewById(R.id.tv_title);
+                    LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+                    View view = layoutInflater.inflate(R.layout.view_dialog_map, null);
+                    TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
                     LatLng ll = marker.getPosition();
-                    for (int i=0;i<=poi_data.size();i++){
-                        Log.i("MainActivity", "判断Location："+marker.getPosition().latitude+"数据中的Location："+poi_data.get(0).getContents().get(i).getLocation().get(1));
-                        if (marker.getPosition().latitude==poi_data.get(0).getContents().get(i).getLocation().get(1)&&marker.getPosition().longitude==poi_data.get(0).getContents().get(i).getLocation().get(0)){
+                    for (int i = 0; i <= poi_data.size(); i++) {
+                        Log.i("MainActivity", "判断Location：" + marker.getPosition().latitude + "数据中的Location：" + poi_data.get(0).getContents().get(i).getLocation().get(1));
+                        if (marker.getPosition().latitude == poi_data.get(0).getContents().get(i).getLocation().get(1) && marker.getPosition().longitude == poi_data.get(0).getContents().get(i).getLocation().get(0)) {
 //                            button.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
 //                            Log.i("MainActivity", poi_data.get(0).getContents().get(i).getLocation()+"设置参数");
-                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
+                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation() + "");
                         }
                     }
 
@@ -288,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
+
     // 设置个性化地图config文件路径
     private void setMapCustomFile(Context context, String PATH) {
         FileOutputStream out = null;
@@ -324,5 +356,180 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         MapView.setCustomMapStylePath(moduleName + "/" + PATH);
 
+    }
+
+    /**
+     * 注册方法
+     */
+    private void signUp() {
+        // 注册是耗时过程，所以要显示一个dialog来提示下用户
+        mDialog = new ProgressDialog(this);
+        mDialog.setMessage("注册中，请稍后...");
+        mDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String username = "liunan";
+                    String password = "81215318";
+                    EMClient.getInstance().createAccount(username, password);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!MainActivity.this.isFinishing()) {
+                                mDialog.dismiss();
+                            }
+                            Toast.makeText(MainActivity.this, "注册成功", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } catch (final HyphenateException e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!MainActivity.this.isFinishing()) {
+                                mDialog.dismiss();
+                            }
+                            /**
+                             * 关于错误码可以参考官方api详细说明
+                             * http://www.easemob.com/apidoc/android/chat3.0/classcom_1_1hyphenate_1_1_e_m_error.html
+                             */
+                            int errorCode = e.getErrorCode();
+                            String message = e.getMessage();
+                            Log.d("lzan13", String.format("sign up - errorCode:%d, errorMsg:%s", errorCode, e.getMessage()));
+                            switch (errorCode) {
+                                // 网络错误
+                                case EMError.NETWORK_ERROR:
+                                    Toast.makeText(MainActivity.this, "网络错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 用户已存在
+                                case EMError.USER_ALREADY_EXIST:
+                                    Toast.makeText(MainActivity.this, "用户已存在 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册
+                                case EMError.USER_ILLEGAL_ARGUMENT:
+                                    Toast.makeText(MainActivity.this, "参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                // 服务器未知错误
+                                case EMError.SERVER_UNKNOWN_ERROR:
+                                    Toast.makeText(MainActivity.this, "服务器未知错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                case EMError.USER_REG_FAILED:
+                                    Toast.makeText(MainActivity.this, "账户注册失败 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                                default:
+                                    Toast.makeText(MainActivity.this, "ml_sign_up_failed code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
+                                    break;
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 登录方法
+     */
+    private void signIn() {
+        mDialog = new ProgressDialog(this);
+        mDialog.setMessage("正在登陆，请稍后...");
+        mDialog.show();
+        String username = "liunan";
+        String password = "81215318";
+        EMClient.getInstance().login(username, password, new EMCallBack() {
+            /**
+             * 登陆成功的回调
+             */
+            @Override
+            public void onSuccess() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDialog.dismiss();
+
+                        // 加载所有会话到内存
+                        EMClient.getInstance().chatManager().loadAllConversations();
+                        // 加载所有群组到内存，如果使用了群组的话
+                        // EMClient.getInstance().groupManager().loadAllGroups();
+
+                        // 登录成功跳转界面
+//                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+//                        startActivity(intent);
+//                        finish();
+                        Toast.makeText(MainActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+
+            /**
+             * 登陆错误的回调
+             * @param i
+             * @param s
+             */
+            @Override
+            public void onError(final int i, final String s) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDialog.dismiss();
+                        Log.d("lzan13", "登录失败 Error code:" + i + ", message:" + s);
+                        /**
+                         * 关于错误码可以参考官方api详细说明
+                         * http://www.easemob.com/apidoc/android/chat3.0/classcom_1_1hyphenate_1_1_e_m_error.html
+                         */
+                        switch (i) {
+                            // 网络异常 2
+                            case EMError.NETWORK_ERROR:
+                                Toast.makeText(MainActivity.this, "网络错误 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 无效的用户名 101
+                            case EMError.INVALID_USER_NAME:
+                                Toast.makeText(MainActivity.this, "无效的用户名 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 无效的密码 102
+                            case EMError.INVALID_PASSWORD:
+                                Toast.makeText(MainActivity.this, "无效的密码 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 用户认证失败，用户名或密码错误 202
+                            case EMError.USER_AUTHENTICATION_FAILED:
+                                Toast.makeText(MainActivity.this, "用户认证失败，用户名或密码错误 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 用户不存在 204
+                            case EMError.USER_NOT_FOUND:
+                                Toast.makeText(MainActivity.this, "用户不存在 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 无法访问到服务器 300
+                            case EMError.SERVER_NOT_REACHABLE:
+                                Toast.makeText(MainActivity.this, "无法访问到服务器 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 等待服务器响应超时 301
+                            case EMError.SERVER_TIMEOUT:
+                                Toast.makeText(MainActivity.this, "等待服务器响应超时 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 服务器繁忙 302
+                            case EMError.SERVER_BUSY:
+                                Toast.makeText(MainActivity.this, "服务器繁忙 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            // 未知 Server 异常 303 一般断网会出现这个错误
+                            case EMError.SERVER_UNKNOWN_ERROR:
+                                Toast.makeText(MainActivity.this, "未知的服务器异常 code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                            default:
+                                Toast.makeText(MainActivity.this, "ml_sign_in_failed code: " + i + ", message:" + s, Toast.LENGTH_LONG).show();
+                                break;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(int i, String s) {
+
+            }
+        });
     }
 }
