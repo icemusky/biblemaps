@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // 提供三种样式模板："custom_config_blue.txt"，"custom_config_dark.txt"，"custom_config_midnightblue.txt"
     private static String PATH = "custom_config.txt";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
