@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    //标题颜色
     <color name="colorPrimary">#3F51B5</color>
+    //最顶端颜色
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="bg_white">#ffffff</color>
+    <color name="tv_darkgray">#3D3D3D</color>
 </resources>

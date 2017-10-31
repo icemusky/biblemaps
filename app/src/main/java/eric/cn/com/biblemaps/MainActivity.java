@@ -1,11 +1,14 @@
 package eric.cn.com.biblemaps;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -106,6 +109,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        signUp();
         signIn();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EMClient.getInstance().createAccount("liunan001", "123456");//同步方法
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     private void initView() {
@@ -163,18 +177,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "求祷", Toast.LENGTH_SHORT).show();
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "代祷", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_slideshow) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "好友", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_manage) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "群", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "注销", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_send) {
-            Toast.makeText(MainActivity.this, "ceshi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "退出", Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -202,6 +216,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 适配android M，检查权限
+        List<String> permissions = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isNeedRequestPermissions(permissions)) {
+            requestPermissions(permissions.toArray(new String[permissions.size()]), 0);
+        }
+    }
+    private void addPermission(List<String> permissionsList, String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+        }
+    }
+    private boolean isNeedRequestPermissions(List<String> permissions) {
+        // 定位精确位置
+        addPermission(permissions, Manifest.permission.ACCESS_FINE_LOCATION);
+        addPermission(permissions, Manifest.permission.ACCESS_COARSE_LOCATION);
+        // 存储权限
+        addPermission(permissions, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        // 读取手机状态
+        addPermission(permissions, Manifest.permission.READ_PHONE_STATE);
+        //相机
+        addPermission(permissions,Manifest.permission.CAMERA);
+        //录音
+        addPermission(permissions,Manifest.permission.RECORD_AUDIO);
+
+        return permissions.size() > 0;
+    }
     @Override
     protected void onStop() {
         //取消注册传感器监听
