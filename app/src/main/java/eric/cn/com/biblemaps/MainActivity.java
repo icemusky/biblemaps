@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // 提供三种样式模板："custom_config_blue.txt"，"custom_config_dark.txt"，"custom_config_midnightblue.txt"
     private static String PATH = "custom_config.txt";
+    private int position=0;//获取当前位置
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -331,10 +332,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             OverlayOptions option = new MarkerOptions()
                     .position(point)
                     .icon(bitmap);
+
             mBaiduMap.addOverlay(option);
             mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+
                     Button button = new Button(getApplicationContext());
                     button.setBackgroundResource(R.drawable.popup);
                     button.setTextColor(Color.BLACK);
@@ -349,12 +352,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (marker.getPosition().latitude == poi_data.get(0).getContents().get(i).getLocation().get(1) && marker.getPosition().longitude == poi_data.get(0).getContents().get(i).getLocation().get(0)) {
 //                            button.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
 //                            Log.i("MainActivity", poi_data.get(0).getContents().get(i).getLocation()+"设置参数");
-                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation() + "");
+//                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation() + "");
+                            Toast.makeText(MainActivity.this,"单击坐标点："+poi_data.get(0).getContents().get(i).getLocation(),Toast.LENGTH_SHORT).show();
+                            position=i;//赋值给当前坐标值
                         }
                     }
 
 //                    linearLayout.setBackgroundResource(R.drawable.popup);
                     mInfoWindow = new InfoWindow(view, ll, -100);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(MainActivity.this,"页面跳转："+poi_data.get(0).getContents().get(position).getLocation(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     mBaiduMap.showInfoWindow(mInfoWindow);
                     return false;
                 }
