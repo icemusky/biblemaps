@@ -1,6 +1,4 @@
-package eric.cn.com.biblemaps.Bean;
-
-import java.util.List;
+package eric.cn.com.biblemaps.bean;
 
 /**
  * Created by Administrator on 2017/8/4.

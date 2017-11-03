@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/main_top"></include>
+
+    <RelativeLayout
+        android:background="#4CAF50"
+        android:layout_width="match_parent"
+        android:layout_height="180dp">
+
+        <TextView
+            android:textColor="@color/bg_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="代祷剩余时间：3天" />
+        <ImageView
+            android:id="@+id/iv_haed"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/touxiang" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_haed"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:text="用户名称"
+            android:textColor="@color/bg_white"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+<LinearLayout
+    android:layout_weight="1"
+    android:layout_width="match_parent"
+    android:layout_height="0dp">
+    <TextView
+        android:padding="8dp"
+        android:text="家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了家里人生病了"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+    <LinearLayout
+        android:background="#FFC125"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+        <TextView
+            android:text="代祷"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:background="#FF8C69"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent">
+        <TextView
+            android:text="群聊"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

@@ -1,4 +1,4 @@
-package eric.cn.com.biblemaps.Utils;
+package eric.cn.com.biblemaps.utils;
 
 
 
@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 
 import org.xutils.common.Callback;
 
-import eric.cn.com.biblemaps.Utils.interfaces.IAsyncHttpComplete;
+import eric.cn.com.biblemaps.utils.interfaces.IAsyncHttpComplete;
 
 
 /**

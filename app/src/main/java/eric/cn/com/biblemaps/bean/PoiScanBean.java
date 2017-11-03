@@ -1,4 +1,4 @@
-package eric.cn.com.biblemaps.Bean;
+package eric.cn.com.biblemaps.bean;
 
 import java.util.List;
 

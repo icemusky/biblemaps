@@ -1,4 +1,4 @@
-package eric.cn.com.biblemaps.Utils.interfaces;
+package eric.cn.com.biblemaps.utils.interfaces;
 
 
 

@@ -1,4 +1,4 @@
-package eric.cn.com.biblemaps.Net;
+package eric.cn.com.biblemaps.net;
 
 import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
@@ -8,11 +8,11 @@ import org.xutils.x;
 import java.util.ArrayList;
 import java.util.List;
 
-import eric.cn.com.biblemaps.Bean.PoiMessageEvent;
-import eric.cn.com.biblemaps.Bean.PoiScanBean;
+import eric.cn.com.biblemaps.bean.PoiMessageEvent;
+import eric.cn.com.biblemaps.bean.PoiScanBean;
 import eric.cn.com.biblemaps.MyApplication;
-import eric.cn.com.biblemaps.Utils.HttpCallBack;
-import eric.cn.com.biblemaps.Utils.interfaces.IAsyncHttpComplete;
+import eric.cn.com.biblemaps.utils.HttpCallBack;
+import eric.cn.com.biblemaps.utils.interfaces.IAsyncHttpComplete;
 
 /**
  * Created by Administrator on 2017/8/4.

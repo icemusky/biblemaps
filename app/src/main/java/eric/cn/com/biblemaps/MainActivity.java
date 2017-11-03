@@ -1,10 +1,8 @@
 package eric.cn.com.biblemaps;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -21,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,9 +56,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import eric.cn.com.biblemaps.Bean.PoiMessageEvent;
-import eric.cn.com.biblemaps.Bean.PoiScanBean;
-import eric.cn.com.biblemaps.Net.PoiScanNet;
+import eric.cn.com.biblemaps.activity.PrayerDetails;
+import eric.cn.com.biblemaps.bean.PoiMessageEvent;
+import eric.cn.com.biblemaps.bean.PoiScanBean;
+import eric.cn.com.biblemaps.net.PoiScanNet;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -353,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                            button.setText(poi_data.get(0).getContents().get(i).getLocation()+"");
 //                            Log.i("MainActivity", poi_data.get(0).getContents().get(i).getLocation()+"设置参数");
 //                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation() + "");
-                            Toast.makeText(MainActivity.this,"单击坐标点："+poi_data.get(0).getContents().get(i).getLocation(),Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this,"单击坐标点："+poi_data.get(0).getContents().get(i).getLocation(),Toast.LENGTH_SHORT).show();
                             position=i;//赋值给当前坐标值
                         }
                     }
@@ -363,7 +361,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(MainActivity.this,"页面跳转："+poi_data.get(0).getContents().get(position).getLocation(),Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this,"页面跳转："+poi_data.get(0).getContents().get(position).getLocation(),Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(MainActivity.this, PrayerDetails.class));
                         }
                     });
                     mBaiduMap.showInfoWindow(mInfoWindow);
