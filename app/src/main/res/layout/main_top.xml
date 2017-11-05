@@ -30,6 +30,16 @@
             android:text="代祷详情"
             android:textColor="@color/bg_white"
             android:textSize="18sp" />
+        <TextView
+            android:layout_marginRight="8dp"
+            android:id="@+id/tv_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="注册"
+            android:textColor="@color/bg_white"
+            android:textSize="18sp" />
 
     </RelativeLayout>
 </LinearLayout>

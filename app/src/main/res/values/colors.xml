@@ -7,4 +7,16 @@
     <color name="colorAccent">#FF4081</color>
     <color name="bg_white">#ffffff</color>
     <color name="tv_darkgray">#3D3D3D</color>
+    <color name="bg">#f3f3f3</color>
+    <color name="white">#ffffff</color>
+    <color name="gray">#a9a9a9</color>
+    <color name="reg">#ff0000</color>
+    <color name="text_gray">#333333</color>
+    <color name="text_light_gray">#999999</color>
+    <color name="light_gray">#e9e9e9</color>
+    <color name="text_red">#f85959</color>
+    <color name="blue">#63B8FF</color>
+    <color name="black">#000000</color>
+    <color name="orange">#FF9B3C</color>
+    <color name="btn_bg">#f85959</color>
 </resources>

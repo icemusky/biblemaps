@@ -60,6 +60,7 @@ import eric.cn.com.biblemaps.activity.PrayerDetails;
 import eric.cn.com.biblemaps.bean.PoiMessageEvent;
 import eric.cn.com.biblemaps.bean.PoiScanBean;
 import eric.cn.com.biblemaps.net.PoiScanNet;
+import eric.cn.com.biblemaps.utils.BaiDuMapCustomFile;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -101,22 +102,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initView();
+        //百度地图poi检索
         PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
 
 
 //        signUp();
         signIn();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EMClient.getInstance().createAccount("liunan001", "123456");//同步方法
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    EMClient.getInstance().createAccount("liunan001", "123456");//同步方法
+//                } catch (HyphenateException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
 
     }
 
@@ -142,7 +144,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
-        setMapCustomFile(MainActivity.this, PATH);
+        // 设置个性化地图config文件路径
+        BaiDuMapCustomFile.setMapCustomFile(MainActivity.this,PATH);
         mMapView = new MapView(this, new BaiduMapOptions());
         MapView.setMapCustomEnable(true);
 
@@ -372,43 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    // 设置个性化地图config文件路径
-    private void setMapCustomFile(Context context, String PATH) {
-        FileOutputStream out = null;
-        InputStream inputStream = null;
-        String moduleName = null;
-        try {
-            inputStream = context.getAssets()
-                    .open("customConfigdir/" + PATH);
-            byte[] b = new byte[inputStream.available()];
-            inputStream.read(b);
 
-            moduleName = context.getFilesDir().getAbsolutePath();
-            File f = new File(moduleName + "/" + PATH);
-            if (f.exists()) {
-                f.delete();
-            }
-            f.createNewFile();
-            out = new FileOutputStream(f);
-            out.write(b);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        MapView.setCustomMapStylePath(moduleName + "/" + PATH);
-
-    }
 
     /**
      * 注册方法
@@ -505,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // 加载所有会话到内存
                         EMClient.getInstance().chatManager().loadAllConversations();
                         // 加载所有群组到内存，如果使用了群组的话
-                        // EMClient.getInstance().groupManager().loadAllGroups();
+                         EMClient.getInstance().groupManager().loadAllGroups();
 
                         // 登录成功跳转界面
 //                        Intent intent = new Intent(MainActivity.this, MainActivity.class);

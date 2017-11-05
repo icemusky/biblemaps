@@ -61,7 +61,7 @@
             android:value="L3tU3jxUAEYZw988iZs0UugVBsAumf9k" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -72,6 +72,8 @@
         </activity>
         <!-- 祷告页面详情 -->
         <activity android:name=".activity.PrayerDetails"></activity>
+        <!-- 注册页面  -->
+        <activity android:name=".activity.RegisterActivity"></activity>
 
         <!-- 百度地图定位监听 -->
         <service

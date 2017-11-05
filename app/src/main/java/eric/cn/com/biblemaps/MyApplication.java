@@ -15,12 +15,15 @@ import org.xutils.x;
 import java.util.Iterator;
 import java.util.List;
 
+import cn.bmob.v3.Bmob;
+
 
 /**
  * Created by Administrator on 2017/7/20.
  */
 
 public class MyApplication extends Application {
+    //百度签名ak  和id
     public static String BAIDU_AK = "LGyDaizTbkNShNatcilGABWbhKWbXNWY";
     public static String BAIDU_GEOTABLE_ID = "172421";
     private static Context context;
@@ -39,16 +42,22 @@ public class MyApplication extends Application {
         x.Ext.setDebug(false);
 
 
-/**
- * 初始化 环信SKD
- */
+      /**
+        * 初始化 环信SKD
+      */
         EMOptions options = new EMOptions();
-// 默认添加好友时，是不需要验证的，改成需要验证
+        // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(false);
-//初始化
+        //初始化
         EMClient.getInstance().init(context, options);
-//在做打包混淆时，关闭debug模式，避免消耗不必要的资源
+        //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
+
+        /**
+         * 初始化 后端云 后面是 key
+         */
+        Bmob.initialize(context, "4cff7784a2709f4fed3fab3be88fac10");
+
     }
 
 
