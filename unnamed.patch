@@ -1,0 +1,15 @@
+Index: app/src/main/java/eric/cn/com/biblemaps/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/eric/cn/com/biblemaps/MainActivity.java	(date 1501864383000)
++++ app/src/main/java/eric/cn/com/biblemaps/MainActivity.java	(revision )
+@@ -69,6 +69,7 @@
+         drawer.setDrawerListener(toggle);
+         toggle.syncState();
+ 
++
+         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+         navigationView.setNavigationItemSelectedListener(this);
+         initView();
