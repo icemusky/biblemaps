@@ -16,14 +16,14 @@ import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.List;
 
-import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
+import eric.cn.com.biblemaps.MyApplication;
 import eric.cn.com.biblemaps.R;
 import eric.cn.com.biblemaps.bean.BmobUser;
+import eric.cn.com.biblemaps.utils.MyProgressDialog;
 import eric.cn.com.biblemaps.utils.MD5Util;
 
 /**
@@ -39,6 +39,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     private EditText et_password;
     private EditText et_sub_password;
     private Button btn_submit;
+    private MyProgressDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,6 +112,8 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
      * 注册用户
      */
     private void setRegisterNet() {
+        dialog=new MyProgressDialog();
+        dialog.ShowDialog(RegisterActivity.this,"账号注册中！！！");
         BmobUser bmobUser = new BmobUser();
         bmobUser.setUsername(et_phone.getText().toString());
         bmobUser.setPassword(MD5Util.getMD5String(et_password.getText().toString()));
@@ -128,6 +131,8 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                                     @Override
                                     public void run() {
                                         Toast.makeText(RegisterActivity.this, "创建账号成功！", Toast.LENGTH_SHORT).show();
+                                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString());
+                                        finish();
                                     }
                                 });
 
@@ -141,6 +146,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 
                                 e1.printStackTrace();
                             }
+                            dialog.CloseDialog();
                         }
                     }).start();
                 } else {

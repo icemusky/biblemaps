@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.bmob.v3.Bmob;
+import eric.cn.com.biblemaps.utils.SPUtils;
 
 
 /**
@@ -26,8 +27,12 @@ public class MyApplication extends Application {
     //百度签名ak  和id
     public static String BAIDU_AK = "LGyDaizTbkNShNatcilGABWbhKWbXNWY";
     public static String BAIDU_GEOTABLE_ID = "172421";
-    private static Context context;
+    public static Context context;
 
+    //账号名称
+    public static String USER_NAME;
+    //读写账号工具
+    public static SPUtils spUtils;
 
     @Override
     public void onCreate() {
@@ -40,14 +45,17 @@ public class MyApplication extends Application {
         SDKInitializer.setCoordType(CoordType.BD09LL);
         x.Ext.init(this);
         x.Ext.setDebug(false);
+        spUtils = new SPUtils();
+        spUtils.GetSharedPreferences();
 
-
-      /**
-        * 初始化 环信SKD
-      */
+        /**
+         * 初始化 环信SKD
+         */
         EMOptions options = new EMOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(false);
+        // ture代表可以自动登陆 环信
+        options.setAutoLogin(true);
         //初始化
         EMClient.getInstance().init(context, options);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源

@@ -63,6 +63,9 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,10 +73,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 首页 -->
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
         <!-- 祷告页面详情 -->
-        <activity android:name=".activity.PrayerDetails"></activity>
+        <activity android:name=".activity.PrayerDetails"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
         <!-- 注册页面  -->
-        <activity android:name=".activity.RegisterActivity"></activity>
+        <activity android:name=".activity.RegisterActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
 
         <!-- 百度地图定位监听 -->
         <service
