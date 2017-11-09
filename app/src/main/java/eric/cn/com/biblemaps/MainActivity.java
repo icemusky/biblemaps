@@ -42,6 +42,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMError;
+import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
@@ -104,6 +105,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initView();
         //百度地图poi检索
         PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<String> usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
+
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
 
     }
 
@@ -278,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-        @Override
+
         public void onConnectHotSpotMessage(String s, int i) {
 
         }
@@ -362,77 +376,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-    /**
-     * 注册方法
-     */
-    private void signUp() {
-        // 注册是耗时过程，所以要显示一个dialog来提示下用户
-        mDialog = new ProgressDialog(this);
-        mDialog.setMessage("注册中，请稍后...");
-        mDialog.show();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String username = "liunan";
-                    String password = "81215318";
-                    EMClient.getInstance().createAccount(username, password);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!MainActivity.this.isFinishing()) {
-                                mDialog.dismiss();
-                            }
-                            Toast.makeText(MainActivity.this, "注册成功", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } catch (final HyphenateException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!MainActivity.this.isFinishing()) {
-                                mDialog.dismiss();
-                            }
-                            /**
-                             * 关于错误码可以参考官方api详细说明
-                             * http://www.easemob.com/apidoc/android/chat3.0/classcom_1_1hyphenate_1_1_e_m_error.html
-                             */
-                            int errorCode = e.getErrorCode();
-                            String message = e.getMessage();
-                            Log.d("lzan13", String.format("sign up - errorCode:%d, errorMsg:%s", errorCode, e.getMessage()));
-                            switch (errorCode) {
-                                // 网络错误
-                                case EMError.NETWORK_ERROR:
-                                    Toast.makeText(MainActivity.this, "网络错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                                // 用户已存在
-                                case EMError.USER_ALREADY_EXIST:
-                                    Toast.makeText(MainActivity.this, "用户已存在 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                                // 参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册
-                                case EMError.USER_ILLEGAL_ARGUMENT:
-                                    Toast.makeText(MainActivity.this, "参数不合法，一般情况是username 使用了uuid导致，不能使用uuid注册 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                                // 服务器未知错误
-                                case EMError.SERVER_UNKNOWN_ERROR:
-                                    Toast.makeText(MainActivity.this, "服务器未知错误 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                                case EMError.USER_REG_FAILED:
-                                    Toast.makeText(MainActivity.this, "账户注册失败 code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                                default:
-                                    Toast.makeText(MainActivity.this, "ml_sign_up_failed code: " + errorCode + ", message:" + message, Toast.LENGTH_LONG).show();
-                                    break;
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
 
 }

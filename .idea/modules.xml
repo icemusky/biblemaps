@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/biblemaps.iml" filepath="$PROJECT_DIR$/biblemaps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ease_ui/ease_ui.iml" filepath="$PROJECT_DIR$/ease_ui/ease_ui.iml" />
     </modules>
   </component>
 </project>

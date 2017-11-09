@@ -61,6 +61,7 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/ll_chat"
         android:background="#FF8C69"
         android:gravity="center"
         android:layout_weight="1"

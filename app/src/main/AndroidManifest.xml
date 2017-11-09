@@ -97,6 +97,7 @@
             android:enabled="true"
             android:process=":remote"></service>
 
+<activity android:name=".activity.ChatActivity"></activity>
 
         <!-- 设置环信应用的AppKey -->
         <meta-data

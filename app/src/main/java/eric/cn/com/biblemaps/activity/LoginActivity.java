@@ -15,7 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMChatManager;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMGroupManager;
+import com.hyphenate.exceptions.HyphenateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +55,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_login);
         initView();
         //自动登陆
-        if (!MyApplication.USER_NAME.equals("")) {
-            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-            finish();
-        }
+//        if (!MyApplication.USER_NAME.equals("")) {
+//            startActivity(new Intent(LoginActivity.this,MainActivity.class));
+//            finish();
+//        }
+
+
     }
 
     @Override
@@ -96,6 +101,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         dialog.CloseDialog();
                         EMClient.getInstance().groupManager().loadAllGroups();
                         EMClient.getInstance().chatManager().loadAllConversations();
+                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString());
                         Toast.makeText(LoginActivity.this, "账号登陆成功！", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this,MainActivity.class));
                         finish();

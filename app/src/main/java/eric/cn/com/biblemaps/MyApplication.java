@@ -5,10 +5,10 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
-import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
+import com.hyphenate.easeui.EaseUI;
 
 import org.xutils.x;
 
@@ -42,7 +42,7 @@ public class MyApplication extends Application {
         SDKInitializer.initialize(this);
         //自4.3.0起，百度地图SDK所有接口均支持百度坐标和国测局坐标，用此方法设置您使用的坐标类型.
         //包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
-        SDKInitializer.setCoordType(CoordType.BD09LL);
+//        SDKInitializer.setCoordType(CoordType.BD09LL);
         x.Ext.init(this);
         x.Ext.setDebug(false);
         spUtils = new SPUtils();
@@ -51,20 +51,22 @@ public class MyApplication extends Application {
         /**
          * 初始化 环信SKD
          */
-        EMOptions options = new EMOptions();
-        // 默认添加好友时，是不需要验证的，改成需要验证
-        options.setAcceptInvitationAlways(false);
-        // ture代表可以自动登陆 环信
-        options.setAutoLogin(true);
-        //初始化
-        EMClient.getInstance().init(context, options);
-        //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
-
+//        EMOptions options = new EMOptions();
+//        // 默认添加好友时，是不需要验证的，改成需要验证
+//        options.setAcceptInvitationAlways(false);
+//        // ture代表可以自动登陆 环信
+//        options.setAutoLogin(true);
+//        //初始化
+//        EMClient.getInstance().init(context, options);
+//        //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
+//        EMClient.getInstance().setDebugMode(true);
+        EaseUI.getInstance().init(this,null);
+//        EMClient.getInstance().setDebugMode(true);
         /**
          * 初始化 后端云 后面是 key
          */
         Bmob.initialize(context, "4cff7784a2709f4fed3fab3be88fac10");
+
 
     }
 
