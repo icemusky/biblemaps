@@ -16,7 +16,7 @@ import com.hyphenate.easeui.EaseConstant;
 import eric.cn.com.biblemaps.R;
 
 /**
- * Created by Administrator on 2017/11/3.
+ * Created by Eric on 2017/11/3.
  */
 
 public class PrayerDetails extends Activity {

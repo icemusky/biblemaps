@@ -31,6 +31,8 @@ public class MyApplication extends Application {
 
     //账号名称
     public static String USER_NAME;
+    //账号密码
+    public static String USER_PASSWORD;
     //读写账号工具
     public static SPUtils spUtils;
 
@@ -53,7 +55,7 @@ public class MyApplication extends Application {
          */
 //        EMOptions options = new EMOptions();
 //        // 默认添加好友时，是不需要验证的，改成需要验证
-//        options.setAcceptInvitationAlways(false);
+//        options.setAcceptInvitationAlways(true);
 //        // ture代表可以自动登陆 环信
 //        options.setAutoLogin(true);
 //        //初始化

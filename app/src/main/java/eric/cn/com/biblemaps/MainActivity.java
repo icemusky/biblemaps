@@ -57,7 +57,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import eric.cn.com.biblemaps.activity.DaiPrayerActivity;
+import eric.cn.com.biblemaps.activity.FriendActivity;
+import eric.cn.com.biblemaps.activity.GroupActivity;
+import eric.cn.com.biblemaps.activity.LoginActivity;
 import eric.cn.com.biblemaps.activity.PrayerDetails;
+import eric.cn.com.biblemaps.activity.QuePrayerActivity;
 import eric.cn.com.biblemaps.bean.PoiMessageEvent;
 import eric.cn.com.biblemaps.bean.PoiScanBean;
 import eric.cn.com.biblemaps.net.PoiScanNet;
@@ -86,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // 提供三种样式模板："custom_config_blue.txt"，"custom_config_dark.txt"，"custom_config_midnightblue.txt"
     private static String PATH = "custom_config.txt";
-    private int position=0;//获取当前位置
+    private int position = 0;//获取当前位置
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,17 +111,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initView();
         //百度地图poi检索
         PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<String> usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
-
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
 
 
@@ -144,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mLocClient.setLocOption(option);
         mLocClient.start();
         // 设置个性化地图config文件路径
-        BaiDuMapCustomFile.setMapCustomFile(MainActivity.this,PATH);
+        BaiDuMapCustomFile.setMapCustomFile(MainActivity.this, PATH);
         mMapView = new MapView(this, new BaiduMapOptions());
         MapView.setMapCustomEnable(true);
 
@@ -177,18 +172,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Toast.makeText(MainActivity.this, "求祷", Toast.LENGTH_SHORT).show();
-            // Handle the camera action
+            //求祷 页面
+            startActivity(new Intent(MainActivity.this, QuePrayerActivity.class));
         } else if (id == R.id.nav_gallery) {
-            Toast.makeText(MainActivity.this, "代祷", Toast.LENGTH_SHORT).show();
+            //代祷 页面
+            startActivity(new Intent(MainActivity.this, DaiPrayerActivity.class));
         } else if (id == R.id.nav_slideshow) {
-            Toast.makeText(MainActivity.this, "好友", Toast.LENGTH_SHORT).show();
+            //好友 页面
+            startActivity(new Intent(MainActivity.this, FriendActivity.class));
         } else if (id == R.id.nav_manage) {
-            Toast.makeText(MainActivity.this, "群", Toast.LENGTH_SHORT).show();
+            //群聊 页面
+            startActivity(new Intent(MainActivity.this, GroupActivity.class));
         } else if (id == R.id.nav_share) {
-            Toast.makeText(MainActivity.this, "注销", Toast.LENGTH_SHORT).show();
+            //注销 页面
+            MyApplication.spUtils.ClearSharedPreferences();
+            EMClient.getInstance().logout(true);
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
         } else if (id == R.id.nav_send) {
-            Toast.makeText(MainActivity.this, "退出", Toast.LENGTH_SHORT).show();
+            //退出 页面
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -225,12 +228,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             requestPermissions(permissions.toArray(new String[permissions.size()]), 0);
         }
     }
+
     private void addPermission(List<String> permissionsList, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission);
         }
     }
+
     private boolean isNeedRequestPermissions(List<String> permissions) {
         // 定位精确位置
         addPermission(permissions, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -240,12 +245,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // 读取手机状态
         addPermission(permissions, Manifest.permission.READ_PHONE_STATE);
         //相机
-        addPermission(permissions,Manifest.permission.CAMERA);
+        addPermission(permissions, Manifest.permission.CAMERA);
         //录音
-        addPermission(permissions,Manifest.permission.RECORD_AUDIO);
+        addPermission(permissions, Manifest.permission.RECORD_AUDIO);
 
         return permissions.size() > 0;
     }
+
     @Override
     protected void onStop() {
         //取消注册传感器监听
@@ -313,20 +319,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final LatLng point = new LatLng(poi_data.get(0).getContents().get(i).getLocation().get(1), poi_data.get(0).getContents().get(i).getLocation().get(0));
             Log.i(TAG, "输出坐标：》》》》》》》》" + poi_data.get(0).getContents().get(i).getLocation().get(1) + poi_data.get(0).getContents().get(i).getLocation().get(0));
             BitmapDescriptor bitmap = null;
-            if (poi_data.get(0).getContents().get(i).getShop_type().equals("3")){
+            if (poi_data.get(0).getContents().get(i).getShop_type().equals("3")) {
                 //类型为3 是教会
                 //构建Marker图标
                 bitmap = BitmapDescriptorFactory
                         .fromResource(R.drawable.icon_jiaotang);
-                Log.i(TAG,"绘制图标：教会");
-            }if (poi_data.get(0).getContents().get(i).getShop_type().equals("1")){
+                Log.i(TAG, "绘制图标：教会");
+            }
+            if (poi_data.get(0).getContents().get(i).getShop_type().equals("1")) {
                 //类型为1  是祈祷
                 //构建Marker图标
                 bitmap = BitmapDescriptorFactory
                         .fromResource(R.drawable.icon_qidao);
-                Log.i(TAG,"绘制图标：祷告");
+                Log.i(TAG, "绘制图标：祷告");
             }
-            
+
             //构建MarkerOption，用于在地图上添加Marker
             OverlayOptions option = new MarkerOptions()
                     .position(point)
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                            Log.i("MainActivity", poi_data.get(0).getContents().get(i).getLocation()+"设置参数");
 //                            tv_title.setText(poi_data.get(0).getContents().get(i).getLocation() + "");
 //                            Toast.makeText(MainActivity.this,"单击坐标点："+poi_data.get(0).getContents().get(i).getLocation(),Toast.LENGTH_SHORT).show();
-                            position=i;//赋值给当前坐标值
+                            position = i;//赋值给当前坐标值
                         }
                     }
 
@@ -373,9 +380,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
-
-
-
 
 
 }

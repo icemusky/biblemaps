@@ -9,7 +9,7 @@ import com.hyphenate.easeui.ui.EaseChatFragment;
 import eric.cn.com.biblemaps.R;
 
 /**
- * Created by Administrator on 2017/11/8.
+ * Created by Eric on 2017/11/8.
  */
 
 public class ChatActivity extends AppCompatActivity {

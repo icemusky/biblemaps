@@ -131,7 +131,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                                     @Override
                                     public void run() {
                                         Toast.makeText(RegisterActivity.this, "创建账号成功！", Toast.LENGTH_SHORT).show();
-                                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString());
+                                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString(),MD5Util.getMD5String(et_password.getText().toString()));
                                         finish();
                                     }
                                 });

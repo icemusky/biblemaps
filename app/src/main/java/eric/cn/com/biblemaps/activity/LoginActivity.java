@@ -55,10 +55,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_login);
         initView();
         //自动登陆
-//        if (!MyApplication.USER_NAME.equals("")) {
-//            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-//            finish();
-//        }
+        if (!MyApplication.USER_NAME.equals("")) {
+            startActivity(new Intent(LoginActivity.this,MainActivity.class));
+            finish();
+//            getLoginNet(MyApplication.USER_NAME,MyApplication.USER_PASSWORD);
+        }
 
 
     }
@@ -86,13 +87,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         btn_submit.setOnClickListener(this);
     }
 
+
     /**
      * 环信登陆
      */
-    private void getLoginNet() {
+    private void getLoginNet(String username,String password) {
         dialog = new MyProgressDialog();
         dialog.ShowDialog(LoginActivity.this, "账号登陆中！！！");
-        EMClient.getInstance().login(et_phone.getText().toString(), MD5Util.getMD5String(et_password.getText().toString()), new EMCallBack() {//回调
+        EMClient.getInstance().login(username,password, new EMCallBack() {//回调
             @Override
             public void onSuccess() {
                 runOnUiThread(new Runnable() {
@@ -101,7 +103,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         dialog.CloseDialog();
                         EMClient.getInstance().groupManager().loadAllGroups();
                         EMClient.getInstance().chatManager().loadAllConversations();
-                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString());
+                        MyApplication.spUtils.SetSharedPreferences(et_phone.getText().toString(),MD5Util.getMD5String(et_password.getText().toString()));
                         Toast.makeText(LoginActivity.this, "账号登陆成功！", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this,MainActivity.class));
                         finish();
@@ -150,7 +152,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 Log.i("LoginActivity", list.size() + "查看数量");
                 if (e == null) {
                     if (list.size() == 1) {
-                        getLoginNet();
+                        getLoginNet(et_phone.getText().toString(),MD5Util.getMD5String(et_password.getText().toString()));
                     } else {
                         Toast.makeText(LoginActivity.this, "账号密码错误！", Toast.LENGTH_SHORT).show();
                     }

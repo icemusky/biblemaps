@@ -17,7 +17,7 @@
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="群" />
+            android:title="群聊" />
     </group>
 
     <item android:title="个人设置">
