@@ -17,6 +17,8 @@ public class SPUtils {
         editor.putString("UserName", username);
         editor.putString("UserPassWord", password);
         editor.commit();
+        MyApplication.USER_NAME = username;
+        MyApplication.USER_PASSWORD = password;
     }
 
     //读取SP 文件存储

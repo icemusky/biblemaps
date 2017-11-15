@@ -13,14 +13,5 @@
         android:layout_height="0dp"
         android:layout_weight="1"></ListView>
 
-    <EditText
-        android:id="@+id/et_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/btn_submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="添加好友" />
 </LinearLayout>

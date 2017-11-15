@@ -1,8 +1,11 @@
 package eric.cn.com.biblemaps.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -189,5 +192,38 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 isPassWord();
                 break;
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 适配android M，检查权限
+        List<String> permissions = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isNeedRequestPermissions(permissions)) {
+            requestPermissions(permissions.toArray(new String[permissions.size()]), 0);
+        }
+    }
+
+    private void addPermission(List<String> permissionsList, String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+        }
+    }
+
+    private boolean isNeedRequestPermissions(List<String> permissions) {
+        // 定位精确位置
+        addPermission(permissions, Manifest.permission.ACCESS_FINE_LOCATION);
+        addPermission(permissions, Manifest.permission.ACCESS_COARSE_LOCATION);
+        // 存储权限
+        addPermission(permissions, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        // 读取手机状态
+        addPermission(permissions, Manifest.permission.READ_PHONE_STATE);
+        //相机
+        addPermission(permissions, Manifest.permission.CAMERA);
+        //录音
+        addPermission(permissions, Manifest.permission.RECORD_AUDIO);
+
+        return permissions.size() > 0;
     }
 }

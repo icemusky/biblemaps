@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -93,6 +94,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String PATH = "custom_config.txt";
     private int position = 0;//获取当前位置
 
+    //侧滑控件注册
+    private ImageView tv_left_icon;
+    private TextView tv_left_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,17 +111,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
         initView();
         //百度地图poi检索
         PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
 
 
-
     }
 
     private void initView() {
+        //侧滑控件
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        navigationView.setNavigationItemSelectedListener(this);
+        tv_left_icon = (ImageView) headerView.findViewById(R.id.tv_left_icon);
+        tv_left_name = (TextView) headerView.findViewById(R.id.tv_left_name);
+
         mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
 
@@ -142,6 +152,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         BaiDuMapCustomFile.setMapCustomFile(MainActivity.this, PATH);
         mMapView = new MapView(this, new BaiduMapOptions());
         MapView.setMapCustomEnable(true);
+
+        //侧滑控件 绑定数据
+        tv_left_name.setText(MyApplication.USER_NAME);
+
 
     }
 

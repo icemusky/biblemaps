@@ -35,8 +35,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
     private LinearLayout ll_back;
     private TextView tv_title;
     private TextView tv_right;
-    private EditText et_id;
-    private Button btn_submit;
     private ListView lv_data;
 
     List<String> usernames;
@@ -65,8 +63,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         ll_back = (LinearLayout) findViewById(R.id.ll_back);
         tv_title = (TextView) findViewById(R.id.tv_title);
         tv_right = (TextView) findViewById(R.id.tv_right);
-        et_id = (EditText) findViewById(R.id.et_id);
-        btn_submit = (Button) findViewById(R.id.btn_submit);
         lv_data = (ListView) findViewById(R.id.lv_data);
 
         ll_back.setOnClickListener(this);
@@ -89,8 +85,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
         thread.start();
-        et_id.setOnClickListener(this);
-        btn_submit.setOnClickListener(this);
 
         lv_data.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,9 +115,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.ll_back:
                 finish();
                 break;
-            case R.id.btn_submit:
-                addFriend();
-                break;
         }
     }
 
@@ -133,7 +124,7 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void run() {
                 try {
-                    EMClient.getInstance().contactManager().addContact(et_id.getText().toString(), "添加好友");
+                    EMClient.getInstance().contactManager().addContact("", "添加好友");
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
