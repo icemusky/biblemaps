@@ -36,6 +36,9 @@ public class MyApplication extends Application {
     //读写账号工具
     public static SPUtils spUtils;
 
+    public static double latitude=0.0;//纬度
+    public static double longitude=0.0;//经度
+
     @Override
     public void onCreate() {
         super.onCreate();

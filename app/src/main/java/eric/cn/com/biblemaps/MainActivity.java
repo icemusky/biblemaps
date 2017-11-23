@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,11 +69,14 @@ import eric.cn.com.biblemaps.bean.PoiMessageEvent;
 import eric.cn.com.biblemaps.bean.PoiScanBean;
 import eric.cn.com.biblemaps.net.PoiScanNet;
 import eric.cn.com.biblemaps.utils.BaiDuMapCustomFile;
+import eric.cn.com.biblemaps.utils.WrappingSlidingDrawer;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
     private static final String TAG = "MainActivity";
     MapView mMapView = null;
     BaiduMap mBaiduMap;
+    private LinearLayout ll_daogao_submit;
+    private WrappingSlidingDrawer select_dialog_listview;
 
     // 定位相关
     LocationClient mLocClient;
@@ -80,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MyLocationData locData;
     private Double lastX = 0.0;
     private int mCurrentDirection = 0;
-    private double mCurrentLat = 0.0;
-    private double mCurrentLon = 0.0;
     private float mCurrentAccracy;
     public MyLocationListenner myListener = new MyLocationListenner();
     private MyLocationConfiguration.LocationMode mCurrentMode;
@@ -114,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initView();
         //百度地图poi检索
-        PoiScanNet.PoiScanNet("41.822981", "123.442725", "1000");
+        PoiScanNet poiScanNet=new PoiScanNet();
+        poiScanNet.PoiScanNet("41.822981", "123.442725", "5000");
 
 
     }
@@ -126,10 +129,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         tv_left_icon = (ImageView) headerView.findViewById(R.id.tv_left_icon);
         tv_left_name = (TextView) headerView.findViewById(R.id.tv_left_name);
+        ll_daogao_submit= (LinearLayout) findViewById(R.id.ll_daogao_submit);
+        select_dialog_listview= (WrappingSlidingDrawer) findViewById(R.id.select_dialog_listview);
 
         mMapView = (MapView) findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
 
+        ll_daogao_submit.setOnClickListener(this);
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
 //        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);//获取传感器管理服务
         // 开启定位图层
@@ -280,6 +286,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapView.onPause();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.ll_daogao_submit:
+                select_dialog_listview.animateClose();
+                break;
+        }
+    }
+
 
     /**
      * 定位SDK监听函数
@@ -292,8 +307,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (location == null || mMapView == null) {
                 return;
             }
-            mCurrentLat = location.getLatitude();
-            mCurrentLon = location.getLongitude();
+            MyApplication.latitude = location.getLatitude();
+            MyApplication.longitude = location.getLongitude();
             mCurrentAccracy = location.getRadius();
             locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
@@ -321,6 +336,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * EvenBus 传递值
+     * @param messageEvent
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void PoiScan(PoiMessageEvent messageEvent) {
 

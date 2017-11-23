@@ -23,7 +23,7 @@ public class PoiScanNet {
     /**
      * POI 周边检索
      */
-    public static List PoiScanNet(String latitude,String longitude,String radius){
+    public  List PoiScanNet(String latitude,String longitude,String radius){
         final List<PoiScanBean> data=new ArrayList<>();
         RequestParams params=new RequestParams("http://api.map.baidu.com/geosearch/v3/nearby?ak="+ MyApplication.BAIDU_AK+"&geotable_id="+MyApplication.BAIDU_GEOTABLE_ID+"&location="+longitude+","+latitude+"&radius="+radius);
         x.http().get(params,new HttpCallBack<>(new IAsyncHttpComplete<PoiScanBean>() {
