@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -65,8 +66,10 @@ import eric.cn.com.biblemaps.activity.GroupActivity;
 import eric.cn.com.biblemaps.activity.LoginActivity;
 import eric.cn.com.biblemaps.activity.PrayerDetails;
 import eric.cn.com.biblemaps.activity.QuePrayerActivity;
+import eric.cn.com.biblemaps.bean.PoiCreateEvent;
 import eric.cn.com.biblemaps.bean.PoiMessageEvent;
 import eric.cn.com.biblemaps.bean.PoiScanBean;
+import eric.cn.com.biblemaps.net.PoiCreateNet;
 import eric.cn.com.biblemaps.net.PoiScanNet;
 import eric.cn.com.biblemaps.utils.BaiDuMapCustomFile;
 import eric.cn.com.biblemaps.utils.WrappingSlidingDrawer;
@@ -99,12 +102,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //侧滑控件注册
     private ImageView tv_left_icon;
     private TextView tv_left_name;
-
+    private EventBus eventBus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        EventBus.getDefault().register(this);
+        eventBus.getDefault().register(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -229,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapView.onDestroy();
         mMapView = null;
         MapView.setMapCustomEnable(false);
+        eventBus.unregister(this);
     }
 
     @Override
@@ -291,9 +295,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (v.getId()){
             case R.id.ll_daogao_submit:
                 select_dialog_listview.animateClose();
+                PoiCreateNet net=new PoiCreateNet();
+                net.Create(MyApplication.latitude+"",MyApplication.longitude+"","1",MyApplication.USER_NAME);
                 break;
         }
     }
+
 
 
     /**
@@ -414,5 +421,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
+    /**
+     * 创建百度POI点回调
+     * @param
+     */
+    @Subscribe(threadMode =ThreadMode.MAIN)
+    public void PoiCreate(PoiCreateEvent createNet){
+        if (createNet.getBean().getStatus()==0) {
+            //创建成功
+            Log.i(TAG,"百度地图创建POI点：成功");
+        }else {
+            //创建失败
+            Log.i(TAG,"百度地图创建POI点：失败");
+        }
+    }
 }

@@ -82,7 +82,8 @@ public class GroupActivity extends AppCompatActivity implements View.OnClickList
                     for (int i = 0; i < grouplist.size(); i++) {
                         usernames.add(grouplist.get(i).getGroupName());
                     }
-                    Log.i(Tag, "群数量:" + grouplist.get(0).getGroupName());
+                    Log.i(Tag, "群数量:" + grouplist.get(0 ).getGroupName());
+
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }

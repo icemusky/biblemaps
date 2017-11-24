@@ -1,11 +1,16 @@
 package eric.cn.com.biblemaps.net;
 
+import android.util.EventLog;
+import android.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import eric.cn.com.biblemaps.MyApplication;
 import eric.cn.com.biblemaps.bean.PoiCreateBean;
+import eric.cn.com.biblemaps.bean.PoiCreateEvent;
 import eric.cn.com.biblemaps.utils.HttpCallBack;
 import eric.cn.com.biblemaps.utils.interfaces.IAsyncHttpComplete;
 
@@ -22,9 +27,8 @@ public class PoiCreateNet {
      * @param shop_type
      * @param title
      */
-    private boolean isReturn;
 
-    public boolean Create(String latitude, String longitude, String shop_type, String title) {
+    public void Create(String latitude, String longitude, String shop_type, String title) {
 
         RequestParams params = new RequestParams("http://api.map.baidu.com/geodata/v3/poi/create");
         params.addBodyParameter("latitude", latitude);//用户上传的纬度
@@ -38,13 +42,15 @@ public class PoiCreateNet {
             @Override
             public void onSuccess(PoiCreateBean result) {
                 if (result.getStatus() == 0) {
-                    isReturn = true;
+                    Log.i("PoiCreateNet","onSuccess1"+result.getMessage());
+                    EventBus.getDefault().post(new PoiCreateEvent(result));
                 }
+                Log.i("PoiCreateNet","onSuccess"+result.getMessage());
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                Log.i("PoiCreateNet","onError");
             }
 
             @Override
@@ -62,6 +68,6 @@ public class PoiCreateNet {
                 return false;
             }
         }));
-        return isReturn;
+
     }
 }
